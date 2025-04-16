@@ -1,13 +1,13 @@
 package app
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/matyukhin00/pvz_service/internal/model"
-	"github.com/matyukhin00/pvz_service/internal/utils"
 )
 
 func (s *server) handleDummyLogin() http.HandlerFunc {
@@ -38,13 +38,12 @@ func (s *server) handleDummyLogin() http.HandlerFunc {
 			return
 		}
 
-		token, err := utils.GenerateToken(
-			model.UserClaims{
-				Role: req.Role,
-			},
-			[]byte(secretKey),
-			time.Hour*24,
-		)
+		ctx, cancel := context.WithTimeout(r.Context(), time.Second*3)
+		defer cancel()
+
+		token, err := s.userService.DummyLogin(ctx, model.UserClaims{
+			Role: req.Role,
+		})
 
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json")

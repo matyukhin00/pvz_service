@@ -2,14 +2,11 @@ package app
 
 import (
 	"net/http"
-	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/matyukhin00/pvz_service/internal/service"
 	"github.com/sirupsen/logrus"
 )
-
-var secretKey string
 
 type server struct {
 	router      *mux.Router
@@ -20,6 +17,7 @@ type server struct {
 func (s *server) configureRouter() {
 	s.router.HandleFunc("/dummyLogin", s.handleDummyLogin()).Methods("POST")
 	s.router.HandleFunc("/register", s.handleRegister()).Methods("POST")
+	s.router.HandleFunc("/login", s.handleLogin()).Methods("POST")
 }
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -36,8 +34,4 @@ func NewServer(logger *logrus.Logger, userService service.UserService) *server {
 	s.configureRouter()
 
 	return s
-}
-
-func init() {
-	secretKey = os.Getenv("secretKey")
 }

@@ -8,6 +8,7 @@ import (
 
 type UserRepository interface {
 	Create(ctx context.Context, info model.UserRequest) (*model.UserAnswer, error)
+	Login(ctx context.Context, info model.UserLogin) (*model.UserLoginAnswer, error)
 	//Read(id int) (any, error)
 	//Update(info any) (any, error)
 	//Delete(info any) (int, error)
