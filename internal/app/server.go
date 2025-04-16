@@ -2,35 +2,42 @@ package app
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
+	"github.com/matyukhin00/pvz_service/internal/service"
 	"github.com/sirupsen/logrus"
 )
 
-const (
-	secretKey = "a8ce34bbd05adf75de273eb3324ce288064dafa272646fbdcb09fe462901acb8c162d4276562b4cb4e239a2c9756bf3dabd540a95d9739237ce1264c8a83f68b0c6821f184eab746fb0587e1bd9cd68bc2cb875ff31f4fffd47cd6bf1a422c9a83ac165d105bbb383a905a33ac16c1dcda7cf56bffa7be6d8768908e95cb95fd920c1df333d419488e2b8ea1828198708371f1d1af09f69167fe2603b74d931e447ff0fa2422119c5959ec9df145532a7070f382fdf4a1868a1e2bb3231eb156ec0d37dad6587058596d1a38e13070ff8202cbaf36e75065c2051dc4dd67fadbfff682faf39353ac607810a72f816a65eab4b2c6d3514bd4d916a23c83f6072a"
-)
+var secretKey string
 
 type server struct {
-	router *mux.Router
-	logger *logrus.Logger
+	router      *mux.Router
+	logger      *logrus.Logger
+	userService service.UserService
 }
 
 func (s *server) configureRouter() {
 	s.router.HandleFunc("/dummyLogin", s.handleDummyLogin()).Methods("POST")
+	s.router.HandleFunc("/register", s.handleRegister()).Methods("POST")
 }
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.router.ServeHTTP(w, r)
 }
 
-func NewServer() *server {
+func NewServer(logger *logrus.Logger, userService service.UserService) *server {
 	s := &server{
-		router: mux.NewRouter(),
-		logger: logrus.New(),
+		router:      mux.NewRouter(),
+		logger:      logger,
+		userService: userService,
 	}
 
 	s.configureRouter()
 
 	return s
+}
+
+func init() {
+	secretKey = os.Getenv("secretKey")
 }
