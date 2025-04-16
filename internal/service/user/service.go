@@ -1,6 +1,8 @@
 package user
 
 import (
+	"os"
+
 	"github.com/matyukhin00/pvz_service/internal/repository"
 )
 
@@ -14,4 +16,8 @@ func NewUserService(repo repository.UserRepository) *UserService {
 	return &UserService{
 		repository: repo,
 	}
+}
+
+func init() {
+	secretKey = os.Getenv("secretKey")
 }

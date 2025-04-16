@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *UserService) Create(ctx context.Context, info model.UserRequest) (*model.UserAnswer, error) {
+func (s *UserService) Create(ctx context.Context, info model.User) (*model.User, error) {
 	_, err := mail.ParseAddress(info.Email)
 	if err != nil {
 		return nil, errors.New("Invalid email address")

@@ -11,25 +11,15 @@ type UserClaims struct {
 	Role string    `json:"role"`
 }
 
-type UserRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Role     string `json:"role"`
+type User struct {
+	Id       uuid.UUID `json:"id" db:"id"`
+	Email    string    `json:"email" db:"id"`
+	Password string    `json:"password" db:"password_hash"`
+	Role     string    `json:"role" db:"role"`
 }
 
-type UserAnswer struct {
-	Id    uuid.UUID `db:"id"`
-	Email string    `db:"email"`
-	Role  string    `db:"role"`
-}
-
-type UserLogin struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type UserLoginAnswer struct {
-	Id       uuid.UUID `db:"id"`
-	Password string    `db:"email"`
-	Role     string    `db:"role"`
+type RegisteredUser struct {
+	Id    uuid.UUID
+	Email string
+	Role  string
 }

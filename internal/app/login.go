@@ -12,7 +12,7 @@ import (
 
 func (s *server) handleLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		login := model.UserLogin{}
+		login := model.User{}
 		err := json.NewDecoder(r.Body).Decode(&login)
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json")

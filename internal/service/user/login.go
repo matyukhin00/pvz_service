@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"net/mail"
-	"os"
 	"time"
 
 	"github.com/matyukhin00/pvz_service/internal/model"
@@ -12,7 +11,7 @@ import (
 	"github.com/matyukhin00/pvz_service/internal/utils"
 )
 
-func (s *UserService) Login(ctx context.Context, info model.UserLogin) (string, error) {
+func (s *UserService) Login(ctx context.Context, info model.User) (string, error) {
 	_, err := mail.ParseAddress(info.Email)
 	if err != nil {
 		return "", errors.New("Invalid email")
@@ -41,8 +40,4 @@ func (s *UserService) Login(ctx context.Context, info model.UserLogin) (string, 
 	)
 
 	return token, nil
-}
-
-func init() {
-	secretKey = os.Getenv("secretKey")
 }

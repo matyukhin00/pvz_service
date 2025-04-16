@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (r *UserRepository) Login(ctx context.Context, info model.UserLogin) (*model.UserLoginAnswer, error) {
+func (r *UserRepository) Login(ctx context.Context, info model.User) (*model.User, error) {
 	builder := sq.Select(columnId, columnPassword, columnRole).
 		From(table).
 		PlaceholderFormat(sq.Dollar).
@@ -20,7 +20,7 @@ func (r *UserRepository) Login(ctx context.Context, info model.UserLogin) (*mode
 		return nil, errors.New("Failed to build query")
 	}
 
-	req := &model.UserLoginAnswer{}
+	req := &model.User{}
 
 	err = r.pool.QueryRow(ctx, query, args...).Scan(&req.Id, &req.Password, &req.Role)
 	if err != nil {

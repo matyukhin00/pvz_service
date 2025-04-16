@@ -8,8 +8,8 @@ import (
 
 type UserService interface {
 	DummyLogin(ctx context.Context, info model.UserClaims) (string, error)
-	Create(ctx context.Context, info model.UserRequest) (*model.UserAnswer, error)
-	Login(ctx context.Context, info model.UserLogin) (string, error)
+	Create(ctx context.Context, info model.User) (*model.User, error)
+	Login(ctx context.Context, info model.User) (string, error)
 	//Get()
 	//Update()
 	//Delete()

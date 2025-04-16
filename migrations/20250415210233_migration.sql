@@ -33,11 +33,11 @@ CREATE TABLE products(
 );
 
 -- +goose Down
+DROP TABLE users;
+DROP TABLE products;
+DROP TABLE receptions;
+DROP TABLE pvz;
 DROP TYPE city_enum;
 DROP TYPE reception_status_enum;
 DROP TYPE product_type_enum;
 DROP TYPE user_role_enum;
-DROP TABLE users;
-DROP TABLE pvz;
-DROP TABLE receptions;
-DROP TABLE products;
