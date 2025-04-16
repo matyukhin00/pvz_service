@@ -9,34 +9,38 @@ import (
 	"github.com/matyukhin00/pvz_service/internal/model"
 )
 
-func (s *server) handleRegister() http.HandlerFunc {
-
+func (s *server) handlePvz() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ctx, cancel := context.WithTimeout(r.Context(), time.Second*3)
-		defer cancel()
+		pvz := model.Pvz{}
 
-		req := model.User{}
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		err := json.NewDecoder(r.Body).Decode(&pvz)
+		if err != nil {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(model.Error{Message: "Invalid json format"})
 			return
 		}
 
-		ans, err := s.userService.Create(ctx, req)
+		if r.Context().Value("role") != "moderator" {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusForbidden)
+			json.NewEncoder(w).Encode(model.Error{Message: "Access is denied"})
+			return
+		}
+
+		ctx, cancel := context.WithTimeout(r.Context(), time.Second*3)
+		defer cancel()
+
+		res, err := s.pvzService.Create(ctx, pvz)
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusConflict)
 			json.NewEncoder(w).Encode(model.Error{Message: err.Error()})
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(model.RegisteredUser{
-			Id:    ans.Id,
-			Email: ans.Email,
-			Role:  ans.Role,
-		})
+		json.NewEncoder(w).Encode(res)
 	}
 }

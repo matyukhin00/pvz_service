@@ -13,3 +13,7 @@ type UserRepository interface {
 	//Update(info any) (any, error)
 	//Delete(info any) (int, error)
 }
+
+type PvzRepository interface {
+	Create(ctx context.Context, info model.Pvz) (*model.Pvz, error)
+}

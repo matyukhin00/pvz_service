@@ -8,7 +8,9 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/joho/godotenv"
 	"github.com/matyukhin00/pvz_service/internal/app"
+	pvzRepo "github.com/matyukhin00/pvz_service/internal/repository/pvz"
 	userRepo "github.com/matyukhin00/pvz_service/internal/repository/user"
+	pvzService "github.com/matyukhin00/pvz_service/internal/service/pvz"
 	userService "github.com/matyukhin00/pvz_service/internal/service/user"
 	"github.com/sirupsen/logrus"
 )
@@ -26,10 +28,13 @@ func main() {
 	}
 	defer pool.Close()
 
-	repo := userRepo.NewUserRepository(pool)
-	service := userService.NewUserService(repo)
+	userRepo := userRepo.NewUserRepository(pool)
+	userService := userService.NewUserService(userRepo)
 
-	s := app.NewServer(logger, service)
+	pvzRepo := pvzRepo.NewPvzRepository(pool)
+	pvzService := pvzService.NewPvzService(pvzRepo)
+
+	s := app.NewServer(logger, userService, pvzService)
 
 	http.ListenAndServe(":8080", s)
 

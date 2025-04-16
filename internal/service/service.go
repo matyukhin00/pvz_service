@@ -10,7 +10,12 @@ type UserService interface {
 	DummyLogin(ctx context.Context, info model.UserClaims) (string, error)
 	Create(ctx context.Context, info model.User) (*model.User, error)
 	Login(ctx context.Context, info model.User) (string, error)
+	ValidateToken(tokenStr string) (*model.UserClaims, error)
 	//Get()
 	//Update()
 	//Delete()
+}
+
+type PvzService interface {
+	Create(ctx context.Context, info model.Pvz) (*model.Pvz, error)
 }
