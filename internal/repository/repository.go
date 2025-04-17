@@ -22,4 +22,5 @@ type PvzRepository interface {
 type ReceptionRepository interface {
 	Create(ctx context.Context, info string) (*model.Reception, error)
 	ExistsOpen(ctx context.Context, info string) (bool, error)
+	Close(ctx context.Context, info string) (*model.Reception, error)
 }

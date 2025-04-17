@@ -25,6 +25,7 @@ func (s *server) configureRouter() {
 	authRouter.Use(s.CheckJWT)
 	authRouter.HandleFunc("/pvz", s.handlePvz()).Methods("POST")
 	authRouter.HandleFunc("/receptions", s.handleReceptions()).Methods("POST")
+	authRouter.HandleFunc("/receptions/{pvzId}/close_last_reception", s.handleCloseLastReception()).Methods("POST")
 }
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {

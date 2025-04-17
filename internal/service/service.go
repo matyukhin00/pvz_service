@@ -23,4 +23,5 @@ type PvzService interface {
 
 type ReceptionService interface {
 	Create(ctx context.Context, info string) (*model.Reception, error)
+	Close(ctx context.Context, info string) (*model.Reception, error)
 }
