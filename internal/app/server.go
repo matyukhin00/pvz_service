@@ -9,10 +9,11 @@ import (
 )
 
 type server struct {
-	router      *mux.Router
-	logger      *logrus.Logger
-	userService service.UserService
-	pvzService  service.PvzService
+	router           *mux.Router
+	logger           *logrus.Logger
+	userService      service.UserService
+	pvzService       service.PvzService
+	receptionService service.ReceptionService
 }
 
 func (s *server) configureRouter() {
@@ -23,18 +24,25 @@ func (s *server) configureRouter() {
 	authRouter := s.router.PathPrefix("/").Subrouter()
 	authRouter.Use(s.CheckJWT)
 	authRouter.HandleFunc("/pvz", s.handlePvz()).Methods("POST")
+	authRouter.HandleFunc("/receptions", s.handleReceptions()).Methods("POST")
 }
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.router.ServeHTTP(w, r)
 }
 
-func NewServer(logger *logrus.Logger, userService service.UserService, pvzService service.PvzService) *server {
+func NewServer(
+	logger *logrus.Logger,
+	userService service.UserService,
+	pvzService service.PvzService,
+	receptionService service.ReceptionService,
+) *server {
 	s := &server{
-		router:      mux.NewRouter(),
-		logger:      logger,
-		userService: userService,
-		pvzService:  pvzService,
+		router:           mux.NewRouter(),
+		logger:           logger,
+		userService:      userService,
+		pvzService:       pvzService,
+		receptionService: receptionService,
 	}
 
 	s.configureRouter()

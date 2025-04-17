@@ -12,10 +12,6 @@ func (s *server) CheckJWT(next http.Handler) http.Handler {
 
 		token = strings.TrimPrefix(token, "Bearer ")
 
-		if len(token) == 0 {
-			return
-		}
-
 		var ctx context.Context
 
 		claims, err := s.userService.ValidateToken(token)

@@ -18,4 +18,9 @@ type UserService interface {
 
 type PvzService interface {
 	Create(ctx context.Context, info model.Pvz) (*model.Pvz, error)
+	Exists(ctx context.Context, id string) (bool, error)
+}
+
+type ReceptionService interface {
+	Create(ctx context.Context, info string) (*model.Reception, error)
 }
