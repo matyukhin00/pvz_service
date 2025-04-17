@@ -23,7 +23,7 @@ func (s *UserService) Create(ctx context.Context, info model.User) (*model.User,
 		return nil, errors.New("Your role must be `employee` or `moderator`")
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(info.Password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(info.Password), 4)
 	if err != nil {
 		return nil, err
 	}
