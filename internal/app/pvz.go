@@ -11,6 +11,13 @@ import (
 
 func (s *server) handlePvz() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Context().Value("role") != "moderator" {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusForbidden)
+			json.NewEncoder(w).Encode(model.Error{Message: "Access is denied"})
+			return
+		}
+
 		pvz := model.Pvz{}
 
 		err := json.NewDecoder(r.Body).Decode(&pvz)
@@ -18,13 +25,6 @@ func (s *server) handlePvz() http.HandlerFunc {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(model.Error{Message: "Invalid json format"})
-			return
-		}
-
-		if r.Context().Value("role") != "moderator" {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusForbidden)
-			json.NewEncoder(w).Encode(model.Error{Message: "Access is denied"})
 			return
 		}
 

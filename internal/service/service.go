@@ -24,4 +24,9 @@ type PvzService interface {
 type ReceptionService interface {
 	Create(ctx context.Context, info string) (*model.Reception, error)
 	Close(ctx context.Context, info string) (*model.Reception, error)
+	GetId(ctx context.Context, pvzId string) (string, error)
+}
+
+type ProductService interface {
+	Add(ctx context.Context, info model.AddProduct) (*model.Product, error)
 }

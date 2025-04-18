@@ -23,4 +23,9 @@ type ReceptionRepository interface {
 	Create(ctx context.Context, info string) (*model.Reception, error)
 	ExistsOpen(ctx context.Context, info string) (bool, error)
 	Close(ctx context.Context, info string) (*model.Reception, error)
+	GetId(ctx context.Context, pvzId string) (string, error)
+}
+
+type ProductRepository interface {
+	Add(ctx context.Context, info model.AddProduct) (*model.Product, error)
 }

@@ -14,6 +14,7 @@ type server struct {
 	userService      service.UserService
 	pvzService       service.PvzService
 	receptionService service.ReceptionService
+	productService   service.ProductService
 }
 
 func (s *server) configureRouter() {
@@ -26,6 +27,7 @@ func (s *server) configureRouter() {
 	authRouter.HandleFunc("/pvz", s.handlePvz()).Methods("POST")
 	authRouter.HandleFunc("/receptions", s.handleReceptions()).Methods("POST")
 	authRouter.HandleFunc("/receptions/{pvzId}/close_last_reception", s.handleCloseLastReception()).Methods("POST")
+	authRouter.HandleFunc("/products", s.handleProducts()).Methods("POST")
 }
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -37,6 +39,7 @@ func NewServer(
 	userService service.UserService,
 	pvzService service.PvzService,
 	receptionService service.ReceptionService,
+	productService service.ProductService,
 ) *server {
 	s := &server{
 		router:           mux.NewRouter(),
@@ -44,6 +47,7 @@ func NewServer(
 		userService:      userService,
 		pvzService:       pvzService,
 		receptionService: receptionService,
+		productService:   productService,
 	}
 
 	s.configureRouter()

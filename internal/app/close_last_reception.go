@@ -13,6 +13,13 @@ import (
 
 func (s *server) handleCloseLastReception() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Context().Value("role") != "employee" {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusForbidden)
+			json.NewEncoder(w).Encode(model.Error{Message: "Access is denied"})
+			return
+		}
+
 		vars := mux.Vars(r)
 		pvzIdStr := vars["pvzId"]
 
@@ -21,13 +28,6 @@ func (s *server) handleCloseLastReception() http.HandlerFunc {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(model.Error{Message: "Invalid pvzId format"})
-			return
-		}
-
-		if r.Context().Value("role") != "employee" {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusForbidden)
-			json.NewEncoder(w).Encode(model.Error{Message: "Access is denied"})
 			return
 		}
 
@@ -47,7 +47,7 @@ func (s *server) handleCloseLastReception() http.HandlerFunc {
 			json.NewEncoder(w).Encode(model.Error{Message: "There is no PVZ with this id"})
 			return
 		}
-		//TODO: проверить есть ли активная приемка -> закрыть ее
+
 		req, err := s.receptionService.Close(ctx, pvzIdStr)
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json")
