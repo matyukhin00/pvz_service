@@ -29,6 +29,7 @@ func (s *server) configureRouter() {
 	authRouter.HandleFunc("/pvz/{pvzId}/close_last_reception", s.handleCloseLastReception()).Methods("POST")
 	authRouter.HandleFunc("/products", s.handleProducts()).Methods("POST")
 	authRouter.HandleFunc("/pvz/{pvzId}/delete_last_product", s.handleDeleteLastProduct()).Methods("POST")
+	authRouter.HandleFunc("/pvz", s.handlePvzPagination()).Methods("GET")
 }
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {

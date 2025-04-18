@@ -11,3 +11,8 @@ type Pvz struct {
 	RegistrationDate time.Time `json:"registrationDate" db:"registration_date"`
 	City             string    `json:"city" db:"city"`
 }
+
+type PvzInfo struct {
+	Pvz        Pvz             `json:"pvz"`
+	Receptions []ReceptionInfo `json:"receptions"`
+}
