@@ -10,7 +10,7 @@ stop:
 	docker-compose down
 
 enter-db:
-	docker-compose exec postgres psql -U $(PG_USER) -w $(PG_PASSWORD) -d $(PG_DATABASE_NAME)
+	docker-compose exec db psql -U $(PG_USER) -w $(PG_PASSWORD) -d $(PG_DATABASE_NAME)
 
 install-deps:
 	GOBIN=$(LOCAL_BIN) go install github.com/pressly/goose/v3/cmd/goose@v3.14.0
