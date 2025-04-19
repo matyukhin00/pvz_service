@@ -3,10 +3,10 @@ LOCAL_BIN:=$(CURDIR)/bin
 LOCAL_MIGRATION_DIR=$(MIGRATION_DIR)
 LOCAL_MIGRATION_DSN="host=$(HTTP_HOST) port=$(PG_PORT) dbname=$(PG_DATABASE_NAME) user=$(PG_USER) password=$(PG_PASSWORD) sslmode=disable"
 
-run-db:
+run:
 	docker-compose up -d
 
-stop-db:
+stop:
 	docker-compose down
 
 enter-db:

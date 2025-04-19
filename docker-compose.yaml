@@ -4,7 +4,21 @@ volumes:
   postgres_volume:
 
 services:
-  postgres:
+  app:
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app_network
+
+
+  db:
     image: postgres:14-alpine3.17
     environment:
       - "POSTGRES_DB=${PG_DATABASE_NAME}"
@@ -14,3 +28,14 @@ services:
       - "${PG_PORT}:5432"
     volumes:
       - postgres_volume:/var/lib/postgresql/data
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 2s
+      timeout: 2s
+      retries: 3
+
+networks:
+  app_network:
+    driver: bridge
