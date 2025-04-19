@@ -26,3 +26,9 @@ local-migrations-up:
 
 local-migrations-down:
 	${LOCAL_BIN}/goose -dir ${LOCAL_MIGRATION_DIR} postgres ${LOCAL_MIGRATION_DSN} down -v 
+
+coverage:
+	@go test -coverprofile=coverage.out ./... && \
+	go tool cover -func=coverage.out | grep -o 'total:.*' && \
+	rm -f coverage.out
+	

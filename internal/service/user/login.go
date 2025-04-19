@@ -30,7 +30,7 @@ func (s *UserService) Login(ctx context.Context, info model.User) (string, error
 		return "", errors.New("Invalid password")
 	}
 
-	token, err := utils.GenerateToken(
+	token, err := s.token.GenerateToken(
 		model.UserClaims{
 			Id:   ans.Id,
 			Role: ans.Role,

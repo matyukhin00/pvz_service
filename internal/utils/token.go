@@ -9,7 +9,17 @@ import (
 	"github.com/matyukhin00/pvz_service/internal/model"
 )
 
-func GenerateToken(info model.UserClaims, secretKey []byte, duration time.Duration) (string, error) {
+type TokenGenerator interface {
+	GenerateToken(info model.UserClaims, secretKey []byte, duration time.Duration) (string, error)
+}
+
+type TokenGen struct{}
+
+func NewTokenGen() TokenGenerator {
+	return &TokenGen{}
+}
+
+func (t *TokenGen) GenerateToken(info model.UserClaims, secretKey []byte, duration time.Duration) (string, error) {
 	claims := model.UserClaims{
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(duration).Unix(),
