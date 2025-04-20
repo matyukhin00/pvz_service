@@ -1,0 +1,440 @@
+definitions:
+  model.DummyLogin:
+    properties:
+      role:
+        enum:
+        - employee
+        - moderator
+        example: employee
+        type: string
+    type: object
+  model.Error:
+    properties:
+      message:
+        type: string
+    type: object
+  model.Login:
+    properties:
+      email:
+        example: user@example.com
+        type: string
+      password:
+        type: string
+    type: object
+  model.Product:
+    properties:
+      dateTime:
+        example: "2025-04-20T14:43:35.824Z"
+        type: string
+      id:
+        example: 364d2ed4-7d7e-417a-ae4e-3c59ee8dd4ee
+        type: string
+      receptionId:
+        example: 11325f80-ef68-4176-906f-c079920953d5
+        type: string
+      type:
+        enum:
+        - электроника
+        - одежда
+        - обувь
+        example: электроника
+        type: string
+    type: object
+  model.Products:
+    properties:
+      pvzId:
+        example: 11325f80-ef68-4176-906f-c079920953d5
+        type: string
+      type:
+        enum:
+        - электроника
+        - одежда
+        - обувь
+        example: электроника
+        type: string
+    type: object
+  model.Pvz:
+    properties:
+      city:
+        enum:
+        - Москва
+        - Казань
+        - Санкт-Петербург
+        example: Москва
+        type: string
+      id:
+        example: 11325f80-ef68-4176-906f-c079920953d5
+        type: string
+      registrationDate:
+        example: "2025-04-20T14:26:22.671Z"
+        type: string
+    type: object
+  model.PvzInfo:
+    properties:
+      pvz:
+        $ref: '#/definitions/model.Pvz'
+      receptions:
+        items:
+          $ref: '#/definitions/model.ReceptionInfo'
+        type: array
+    type: object
+  model.Reception:
+    properties:
+      dateTime:
+        example: "2025-04-20T14:32:38.032Z"
+        type: string
+      id:
+        example: 11325f80-ef68-4176-906f-c079920953d5
+        type: string
+      pvzId:
+        example: fa796eea-b7f8-4426-8ea3-2884c85652fe
+        type: string
+      status:
+        enum:
+        - in_progress
+        - closed
+        example: in_progress
+        type: string
+    type: object
+  model.ReceptionInfo:
+    properties:
+      products:
+        items:
+          $ref: '#/definitions/model.Product'
+        type: array
+      reception:
+        $ref: '#/definitions/model.Reception'
+    type: object
+  model.Receptions:
+    properties:
+      pvzId:
+        example: fa796eea-b7f8-4426-8ea3-2884c85652fe
+        type: string
+    type: object
+  model.Register:
+    properties:
+      email:
+        example: user@example.com
+        type: string
+      password:
+        type: string
+      role:
+        enum:
+        - employee
+        - moderator
+        example: employee
+        type: string
+    type: object
+  model.RegisteredUser:
+    properties:
+      email:
+        example: user@example.com
+        type: string
+      id:
+        example: ddb0897f-dfc8-4f1d-8263-f2d0d11b33fe
+        type: string
+      role:
+        enum:
+        - employee
+        - moderator
+        example: employee
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: matyukhin04@inbox.ru
+  description: Сервис для управления ПВЗ и приемкой товаров
+  title: PVZ Service API
+  version: "1.0"
+paths:
+  /dummyLogin:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Роль пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.DummyLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Bearer token
+          schema:
+            type: string
+        "400":
+          description: Некорректный запрос или роль
+          schema:
+            $ref: '#/definitions/model.Error'
+        "500":
+          description: Ошибка генерации токена
+          schema:
+            $ref: '#/definitions/model.Error'
+      summary: Получение тестового токена
+      tags:
+      - auth
+  /login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Роль пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Bearer token
+          schema:
+            type: string
+        "400":
+          description: Невалидный JSON
+          schema:
+            $ref: '#/definitions/model.Error'
+        "401":
+          description: Неверные данные для входа
+          schema:
+            $ref: '#/definitions/model.Error'
+      summary: Авторизация пользователя
+      tags:
+      - auth
+  /products:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID ПВЗ
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Products'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Товар добавлен
+          schema:
+            $ref: '#/definitions/model.Product'
+        "400":
+          description: Невалидный JSON, ПВЗ с заданным id не существует или нету открытой
+            приемки
+          schema:
+            $ref: '#/definitions/model.Error'
+        "403":
+          description: Доступ запрещен
+          schema:
+            $ref: '#/definitions/model.Error'
+      security:
+      - BearerAuth: []
+      summary: Добавление товара в текущую приемку (только для сотрудников ПВЗ)
+      tags:
+      - pvz
+  /pvz:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Начальная дата диапозона (RFC3339)
+        in: query
+        name: startDate
+        required: true
+        type: string
+      - description: Конечная дата диапозона (RFC3339)
+        in: query
+        name: endDate
+        required: true
+        type: string
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Количество элементов на странице
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список ПВЗ
+          schema:
+            $ref: '#/definitions/model.PvzInfo'
+        "403":
+          description: Доступ запрещен
+          schema:
+            $ref: '#/definitions/model.Error'
+      security:
+      - BearerAuth: []
+      summary: Получение списка ПВЗ с фильтрацией по дате приемки и пагинацией (для
+        модераторов и сотрудников)
+      tags:
+      - pvz
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные нового ПВЗ
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Pvz'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: ПВЗ успешно создан
+          schema:
+            $ref: '#/definitions/model.Pvz'
+        "400":
+          description: Невалидный JSON или ПВЗ уже создан
+          schema:
+            $ref: '#/definitions/model.Error'
+        "403":
+          description: Доступ запрещен
+          schema:
+            $ref: '#/definitions/model.Error'
+      security:
+      - BearerAuth: []
+      summary: Создание ПВЗ (только для модераторов)
+      tags:
+      - pvz
+  /pvz/{pvzId}/close_last_reception:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: UUID ПВЗ
+        format: uuid
+        in: path
+        name: pvzId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Приемка закрыта
+          schema:
+            $ref: '#/definitions/model.Reception'
+        "400":
+          description: Невалидный JSON, ПВЗ с заданным id не существует или приемка
+            уже закрыта
+          schema:
+            $ref: '#/definitions/model.Error'
+        "403":
+          description: Доступ запрещен
+          schema:
+            $ref: '#/definitions/model.Error'
+      security:
+      - BearerAuth: []
+      summary: Закрытие последней открытой приемки товаров в рамках ПВЗ (только для
+        сотрудников ПВЗ)
+      tags:
+      - pvz
+  /pvz/{pvzId}/delete_last_product:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: UUID ПВЗ
+        format: uuid
+        in: path
+        name: pvzId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Товар удален
+        "400":
+          description: Невалидный JSON, ПВЗ с заданным id не существует или нечего
+            удалять
+          schema:
+            $ref: '#/definitions/model.Error'
+        "403":
+          description: Доступ запрещен
+          schema:
+            $ref: '#/definitions/model.Error'
+      security:
+      - BearerAuth: []
+      summary: Удаление последнего добавленного товара из текущей приемки (LIFO, только
+        для сотрудников ПВЗ)
+      tags:
+      - pvz
+  /receptions:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID ПВЗ
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Receptions'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Приемка создана
+          schema:
+            $ref: '#/definitions/model.Reception'
+        "400":
+          description: Невалидный JSON, ПВЗ с заданным id не существует или есть незакрытая
+            приемка
+          schema:
+            $ref: '#/definitions/model.Error'
+        "403":
+          description: Доступ запрещен
+          schema:
+            $ref: '#/definitions/model.Error'
+      security:
+      - BearerAuth: []
+      summary: Создание новой приемки товаров (только для сотрудников ПВЗ)
+      tags:
+      - pvz
+  /register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные нового пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Register'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Пользователь успешно зарегистрирован
+          schema:
+            $ref: '#/definitions/model.RegisteredUser'
+        "400":
+          description: Невалидный JSON или ошибка регистрации
+          schema:
+            $ref: '#/definitions/model.Error'
+      summary: Регистрация пользователя
+      tags:
+      - auth
+securityDefinitions:
+  BearerAuth:
+    description: Введите **Bearer JWT_TOKEN** для авторизации
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -11,6 +11,16 @@ import (
 	"github.com/matyukhin00/pvz_service/internal/model"
 )
 
+// @Summary      Закрытие последней открытой приемки товаров в рамках ПВЗ (только для сотрудников ПВЗ)
+// @Tags         pvz
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param 		 pvzId path string true "UUID ПВЗ" format(uuid)
+// @Success      200 {object} model.Reception "Приемка закрыта"
+// @Failure      400 {object} model.Error "Невалидный JSON, ПВЗ с заданным id не существует или приемка уже закрыта"
+// @Failure      403 {object} model.Error "Доступ запрещен"
+// @Router 		 /pvz/{pvzId}/close_last_reception [post]
 func (s *server) handleCloseLastReception() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Context().Value("role") != "employee" {

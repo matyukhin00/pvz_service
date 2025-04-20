@@ -9,6 +9,16 @@ import (
 	"github.com/matyukhin00/pvz_service/internal/model"
 )
 
+// @Summary      Создание ПВЗ (только для модераторов)
+// @Tags         pvz
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body model.Pvz true "Данные нового ПВЗ"
+// @Success      201 {object} model.Pvz "ПВЗ успешно создан"
+// @Failure      400 {object} model.Error "Невалидный JSON или ПВЗ уже создан"
+// @Failure      403 {object} model.Error "Доступ запрещен"
+// @Router		 /pvz [post]
 func (s *server) handlePvz() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Context().Value("role") != "moderator" {

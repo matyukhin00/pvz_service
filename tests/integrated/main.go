@@ -141,7 +141,7 @@ func main() {
 
 	types := []string{"электроника", "одежда", "обувь"}
 	for i := 0; i < 50; i++ {
-		productJson, err := json.Marshal(model.AddProductInc{
+		productJson, err := json.Marshal(model.Products{
 			Type:  types[i%3],
 			PvzId: pvz.Id,
 		})

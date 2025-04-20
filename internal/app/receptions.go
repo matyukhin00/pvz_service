@@ -6,14 +6,20 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/matyukhin00/pvz_service/internal/model"
 )
 
+// @Summary      Создание новой приемки товаров (только для сотрудников ПВЗ)
+// @Tags         pvz
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body model.Receptions true "ID ПВЗ"
+// @Success      201 {object} model.Reception "Приемка создана"
+// @Failure      400 {object} model.Error "Невалидный JSON, ПВЗ с заданным id не существует или есть незакрытая приемка"
+// @Failure      403 {object} model.Error "Доступ запрещен"
+// @Router 		 /receptions [post]
 func (s *server) handleReceptions() http.HandlerFunc {
-	type id struct {
-		Id uuid.UUID `json:"pvzId"`
-	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Context().Value("role") != "employee" {
 			w.Header().Set("Content-Type", "application/json")
@@ -22,7 +28,7 @@ func (s *server) handleReceptions() http.HandlerFunc {
 			return
 		}
 
-		id := id{}
+		id := model.Receptions{}
 		err := json.NewDecoder(r.Body).Decode(&id)
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json")

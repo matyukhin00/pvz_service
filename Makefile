@@ -32,3 +32,5 @@ coverage:
 	go tool cover -func=coverage.out | grep -o 'total:.*' && \
 	rm -f coverage.out
 	
+generate-docs:
+	swag init -d ./cmd/server,./internal/app,./internal/model

@@ -9,6 +9,16 @@ import (
 	"github.com/matyukhin00/pvz_service/internal/model"
 )
 
+// @Summary      Добавление товара в текущую приемку (только для сотрудников ПВЗ)
+// @Tags         pvz
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body model.Products true "ID ПВЗ"
+// @Success      201 {object} model.Product "Товар добавлен"
+// @Failure      400 {object} model.Error "Невалидный JSON, ПВЗ с заданным id не существует или нету открытой приемки"
+// @Failure      403 {object} model.Error "Доступ запрещен"
+// @Router 		 /products [post]
 func (s *server) handleProducts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Context().Value("role") != "employee" {
@@ -18,7 +28,7 @@ func (s *server) handleProducts() http.HandlerFunc {
 			return
 		}
 
-		request := &model.AddProductInc{}
+		request := &model.Products{}
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json")

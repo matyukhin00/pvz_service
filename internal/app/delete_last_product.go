@@ -11,6 +11,16 @@ import (
 	"github.com/matyukhin00/pvz_service/internal/model"
 )
 
+// @Summary      Удаление последнего добавленного товара из текущей приемки (LIFO, только для сотрудников ПВЗ)
+// @Tags         pvz
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param 		 pvzId path string true "UUID ПВЗ" format(uuid)
+// @Success      200 "Товар удален"
+// @Failure      400 {object} model.Error "Невалидный JSON, ПВЗ с заданным id не существует или нечего удалять"
+// @Failure      403 {object} model.Error "Доступ запрещен"
+// @Router 		 /pvz/{pvzId}/delete_last_product [post]
 func (s *server) handleDeleteLastProduct() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Context().Value("role") != "employee" {

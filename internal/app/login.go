@@ -10,6 +10,15 @@ import (
 	"github.com/matyukhin00/pvz_service/internal/model"
 )
 
+// @Summary      Авторизация пользователя
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        request body model.Login true "Роль пользователя"
+// @Success      200 {string} string "Bearer token"
+// @Failure      400 {object} model.Error "Невалидный JSON"
+// @Failure      401 {object} model.Error "Неверные данные для входа"
+// @Router 		 /login [post]“
 func (s *server) handleLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		login := model.User{}

@@ -9,8 +9,15 @@ import (
 	"github.com/matyukhin00/pvz_service/internal/model"
 )
 
+// @Summary      Регистрация пользователя
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        request body model.Register true "Данные нового пользователя"
+// @Success      201 {object} model.RegisteredUser "Пользователь успешно зарегистрирован"
+// @Failure      400 {object} model.Error "Невалидный JSON или ошибка регистрации"
+// @Router 		 /register [post]
 func (s *server) handleRegister() http.HandlerFunc {
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), time.Second*3)
 		defer cancel()

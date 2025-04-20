@@ -10,11 +10,16 @@ import (
 	"github.com/matyukhin00/pvz_service/internal/model"
 )
 
+// @Summary      Получение тестового токена
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        request body model.DummyLogin true "Роль пользователя"
+// @Success      200 {string} string "Bearer token"
+// @Failure      400 {object} model.Error "Некорректный запрос или роль"
+// @Failure      500 {object} model.Error "Ошибка генерации токена"
+// @Router 		 /dummyLogin [post]
 func (s *server) handleDummyLogin() http.HandlerFunc {
-	type request struct {
-		Role string `json:"role"`
-	}
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Content-Type") != "application/json" {
 			w.Header().Set("Content-Type", "application/json")
@@ -23,7 +28,7 @@ func (s *server) handleDummyLogin() http.HandlerFunc {
 			return
 		}
 
-		req := &request{}
+		req := &model.DummyLogin{}
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)

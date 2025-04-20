@@ -22,6 +22,19 @@ import (
 
 var dbDNS string
 
+// @title PVZ Service API
+// @version 1.0
+// @description Сервис для управления ПВЗ и приемкой товаров
+
+// @contact.email matyukhin04@inbox.ru
+
+// @host localhost:8080
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Введите **Bearer JWT_TOKEN** для авторизации
+
 func main() {
 	ctx := context.Background()
 

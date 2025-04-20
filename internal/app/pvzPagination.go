@@ -10,6 +10,18 @@ import (
 	"github.com/matyukhin00/pvz_service/internal/model"
 )
 
+// @Summary      Получение списка ПВЗ с фильтрацией по дате приемки и пагинацией (для модераторов и сотрудников)
+// @Tags         pvz
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param 		 startDate query string true "Начальная дата диапозона (RFC3339)"
+// @Param 		 endDate query string true "Конечная дата диапозона (RFC3339)"
+// @Param 		 page query integer false "Номер страницы" default(1)
+// @Param 		 limit query integer false "Количество элементов на странице" default(10)
+// @Success      200 {object} model.PvzInfo "Список ПВЗ"
+// @Failure      403 {object} model.Error "Доступ запрещен"
+// @Router 		 /pvz [get]
 func (s *server) handlePvzPagination() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		role := r.Context().Value("role")
