@@ -20,6 +20,7 @@ import (
 // @Param 		 page query integer false "Номер страницы" default(1)
 // @Param 		 limit query integer false "Количество элементов на странице" default(10)
 // @Success      200 {object} model.PvzInfo "Список ПВЗ"
+// @Failure      400 {object} model.Error "Неправильный формат даты или страница пуста"
 // @Failure      403 {object} model.Error "Доступ запрещен"
 // @Router 		 /pvz [get]
 func (s *server) handlePvzPagination() http.HandlerFunc {
@@ -118,10 +119,17 @@ func (s *server) handlePvzPagination() http.HandlerFunc {
 			info = append(info, *pvzInfo)
 		}
 
+		if page > (len(info)+limit-1)/limit {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(model.Error{Message: "Page is empty"})
+			return
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		if page*limit > len(info) {
+		if page*limit == len(info) {
 			json.NewEncoder(w).Encode(info[(page-1)*limit:])
 		} else {
 			json.NewEncoder(w).Encode(info[(page-1)*limit : page*limit])
