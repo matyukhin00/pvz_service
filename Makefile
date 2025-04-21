@@ -8,6 +8,7 @@ run:
 
 stop:
 	docker-compose down
+	docker rmi pvz_service-app
 
 enter-db:
 	docker-compose exec db psql -U $(PG_USER) -w $(PG_PASSWORD) -d $(PG_DATABASE_NAME)

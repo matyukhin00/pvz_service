@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/matyukhin00/pvz_service/internal/model"
+	"github.com/sirupsen/logrus"
 )
 
 // @Summary      Регистрация пользователя
@@ -37,6 +39,13 @@ func (s *server) handleRegister() http.HandlerFunc {
 			json.NewEncoder(w).Encode(model.Error{Message: err.Error()})
 			return
 		}
+
+		go func(id uuid.UUID, email, role string) {
+			s.logger.WithFields(logrus.Fields{
+				"method": r.Method,
+				"path":   r.URL.Path,
+			}).Infof("Was registered user with id='%s', email='%s', role='%s'", id, email, role)
+		}(ans.Id, ans.Email, ans.Role)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)

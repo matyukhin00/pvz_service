@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/matyukhin00/pvz_service/internal/model"
+	"github.com/sirupsen/logrus"
 )
 
 // @Summary      Создание новой приемки товаров (только для сотрудников ПВЗ)
@@ -62,6 +64,14 @@ func (s *server) handleReceptions() http.HandlerFunc {
 			json.NewEncoder(w).Encode(model.Error{Message: err.Error()})
 			return
 		}
+
+		go func(rId, pId uuid.UUID) {
+			s.logger.WithFields(logrus.Fields{
+				"method": r.Method,
+				"path":   r.URL.Path,
+				"user":   r.Context().Value("user_id"),
+			}).Infof("Reception(%s) was opened in PVZ(%s)", rId, pId)
+		}(res.Id, res.PvzId)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)

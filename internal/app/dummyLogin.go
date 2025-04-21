@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/matyukhin00/pvz_service/internal/model"
+	"github.com/sirupsen/logrus"
 )
 
 // @Summary      Получение тестового токена
@@ -57,10 +58,16 @@ func (s *server) handleDummyLogin() http.HandlerFunc {
 			return
 		}
 
+		go func(role string) {
+			s.logger.WithFields(logrus.Fields{
+				"method": r.Method,
+				"path":   r.URL.Path,
+			}).Infof("JWT-token with role %s has been issued", role)
+		}(req.Role)
+
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Add("Authorization", fmt.Sprintf("Bearer %s", token))
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(token)
-
 	}
 }

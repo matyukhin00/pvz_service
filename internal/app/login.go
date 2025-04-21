@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/matyukhin00/pvz_service/internal/model"
+	"github.com/sirupsen/logrus"
 )
 
 // @Summary      Авторизация пользователя
@@ -41,6 +42,13 @@ func (s *server) handleLogin() http.HandlerFunc {
 			json.NewEncoder(w).Encode(model.Error{Message: err.Error()})
 			return
 		}
+
+		go func(email string) {
+			s.logger.WithFields(logrus.Fields{
+				"method": r.Method,
+				"path":   r.URL.Path,
+			}).Infof("JWT-token was issued for user with email='%s'", email)
+		}(login.Email)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Add("Authorization", fmt.Sprintf("Bearer %s", token))

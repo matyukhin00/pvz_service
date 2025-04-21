@@ -36,6 +36,15 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.router.ServeHTTP(w, r)
 }
 
+func (s *server) Run() {
+	ch := make(chan error)
+	go func() {
+		ch <- http.ListenAndServe(":8080", s)
+	}()
+	s.logger.Infof("Server is running on localhost:8080")
+	<-ch
+}
+
 func NewServer(
 	logger *logrus.Logger,
 	userService service.UserService,

@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/matyukhin00/pvz_service/internal/model"
+	"github.com/sirupsen/logrus"
 )
 
 // @Summary      Добавление товара в текущую приемку (только для сотрудников ПВЗ)
@@ -72,6 +74,14 @@ func (s *server) handleProducts() http.HandlerFunc {
 			json.NewEncoder(w).Encode(model.Error{Message: err.Error()})
 			return
 		}
+
+		go func(rId uuid.UUID, typ string, pId uuid.UUID) {
+			s.logger.WithFields(logrus.Fields{
+				"method": r.Method,
+				"path":   r.URL.Path,
+				"user":   r.Context().Value("user_id"),
+			}).Infof("In reception='%s' was added %s (%s)", rId, typ, pId)
+		}(res.ReceptionId, res.Type, res.Id)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)

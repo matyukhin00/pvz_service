@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"net/http"
 	"os"
 
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -39,6 +38,10 @@ func main() {
 	ctx := context.Background()
 
 	logger := logrus.New()
+	logger.SetOutput(os.Stdout)
+	logger.SetFormatter(&logrus.JSONFormatter{
+		DisableTimestamp: true,
+	})
 
 	pool, err := pgxpool.Connect(ctx, dbDNS)
 	if err != nil {
@@ -66,12 +69,10 @@ func main() {
 		productService,
 	)
 
-	http.ListenAndServe(":8080", s)
-
+	s.Run()
 }
 
 func init() {
 	godotenv.Load(".env")
-
 	dbDNS = os.Getenv("PG_DNS")
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/matyukhin00/pvz_service/internal/model"
+	"github.com/sirupsen/logrus"
 )
 
 // @Summary      Закрытие последней открытой приемки товаров в рамках ПВЗ (только для сотрудников ПВЗ)
@@ -65,6 +66,14 @@ func (s *server) handleCloseLastReception() http.HandlerFunc {
 			json.NewEncoder(w).Encode(model.Error{Message: err.Error()})
 			return
 		}
+
+		go func(rId, pId uuid.UUID) {
+			s.logger.WithFields(logrus.Fields{
+				"method": r.Method,
+				"path":   r.URL.Path,
+				"user":   r.Context().Value("user_id"),
+			}).Infof("Reception (%s) was closed in PVZ='%s'", rId, pId)
+		}(req.Id, req.PvzId)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

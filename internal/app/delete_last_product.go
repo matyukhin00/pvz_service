@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/matyukhin00/pvz_service/internal/model"
+	"github.com/sirupsen/logrus"
 )
 
 // @Summary      Удаление последнего добавленного товара из текущей приемки (LIFO, только для сотрудников ПВЗ)
@@ -75,6 +76,15 @@ func (s *server) handleDeleteLastProduct() http.HandlerFunc {
 		}
 
 		res, err := s.receptionService.Get(ctx, receptionId)
+
+		go func(rId, pId uuid.UUID) {
+			s.logger.WithFields(logrus.Fields{
+				"method": r.Method,
+				"path":   r.URL.Path,
+				"user":   r.Context().Value("user_id"),
+			}).Infof("Last product was deleted from reception (%s) in PVZ='%s'", rId, pId)
+		}(res.Id, res.PvzId)
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(res)

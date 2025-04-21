@@ -211,6 +211,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.PvzInfo"
                         }
                     },
+                    "400": {
+                        "description": "Неправильный формат даты или страница пуста",
+                        "schema": {
+                            "$ref": "#/definitions/model.Error"
+                        }
+                    },
                     "403": {
                         "description": "Доступ запрещен",
                         "schema": {

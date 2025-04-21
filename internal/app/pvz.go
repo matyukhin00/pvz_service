@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/matyukhin00/pvz_service/internal/model"
+	"github.com/sirupsen/logrus"
 )
 
 // @Summary      Создание ПВЗ (только для модераторов)
@@ -48,6 +50,14 @@ func (s *server) handlePvz() http.HandlerFunc {
 			json.NewEncoder(w).Encode(model.Error{Message: err.Error()})
 			return
 		}
+
+		go func(id uuid.UUID) {
+			s.logger.WithFields(logrus.Fields{
+				"method": r.Method,
+				"path":   r.URL.Path,
+				"user":   r.Context().Value("user_id"),
+			}).Infof("PVZ was created with id='%s'", id)
+		}(res.Id)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
